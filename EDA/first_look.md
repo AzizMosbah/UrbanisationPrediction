@@ -28,7 +28,7 @@ os.chdir('../')
 ### Modules and Libraries Needed
 
 ```python
-from config import SUBMISSION_SAMPLE, ANALYTICAL, TARGET, COLUMNS_DESCRIPTION, LANDCOVER_MAP, RASTER, SHAPEFILE
+from Pipelines.process_raw import analytical_table, target, columns_description, land_cover_map, shapefile
 import pandas as pd
 import numpy as np
 import rasterio as rio
@@ -44,17 +44,13 @@ from rasterio.plot import plotting_extent
 import rasterstats as rs
 from rasterio.plot import show
 import plotly.graph_objects as go
+import plotly.offline as pyo
+import plotly.graph_objs as go
+# Set notebook mode to work in offline
+pyo.init_notebook_mode()
 ```
 
-### Tabular Data
-
-```python
-analytical_table = pd.read_csv(ANALYTICAL)
-target = pd.read_csv(TARGET)
-columns_description = pd.read_csv(COLUMNS_DESCRIPTION)
-landcover_map = pd.read_csv(LANDCOVER_MAP)
-submission_sample = pd.read_csv(SUBMISSION_SAMPLE)
-```
+## Tabular Data
 
 ```python
 analytical_table.head()
@@ -76,6 +72,59 @@ print("We have a target for {0} of these tiles".format(len(target)))
 columns_description
 ```
 
+    Some information (especially on elevation and slope of the land) appears on the tabular data but is not on the raster file 
+    Let's visualize that data using the shapefile 
+
+
+### Shapefile
+
+```python
+shapefile.head()
+```
+
+```python
+fig, ax = plt.subplots(1, figsize=(10, 6))
+ax.axis('off')
+shapefile.plot(ax = ax)
+```
+
+    We merge the data of interest to the shapefile from the analytical table using the primary key [tile_h, tile_v]
+
+```python
+geo_analytical_table = shapefile.merge(analytical_table, how = 'inner', on = ['tile_h', 'tile_v'])
+```
+
+```python
+fig, axs = plt.subplots(3,3, figsize=(36,36))
+axs[0,0].axis('off')
+axs[0,0].set_title('Tile Elevation')
+geo_analytical_table.plot(column = 'elevation', ax = axs[0,0], cmap = 'hot', legend=True)
+axs[0,1].axis('off')
+axs[0,1].set_title('Elevation Standard Deviation')
+geo_analytical_table.plot(column = 'elevation_sd', ax = axs[0,1], cmap = 'hot', legend=True)
+axs[0,2].axis('off')
+axs[0,2].set_title('Tile Degree of Slope')
+geo_analytical_table.plot(column = 'degree_of_slope', ax = axs[0,2], cmap = 'hot', legend=True)
+axs[1,0].axis('off')
+axs[1,0].set_title('Standard Deviation of Degree of Slope')
+geo_analytical_table.plot(column = 'degree_of_slope_sd', ax = axs[1,0], cmap = 'hot', legend=True)
+axs[1,1].axis('off')
+axs[1,1].set_title('Degree of Slope Minimum')
+geo_analytical_table.plot(column = 'degree_of_slope_min', ax = axs[1,1], cmap = 'hot', legend=True)
+axs[1,2].axis('off')
+axs[1,2].set_title('Degree of Slope Maximum')
+geo_analytical_table.plot(column = 'degree_of_slope_max', ax = axs[1,2], cmap = 'hot', legend=True)
+axs[2,0].axis('off')
+axs[2,0].set_title('Elevation Maximum')
+geo_analytical_table.plot(column = 'elevation_max', ax = axs[2,0], cmap = 'hot', legend=True)
+axs[2,1].axis('off')
+axs[2,1].set_title('Elevation Minimum')
+geo_analytical_table.plot(column = 'elevation_min', ax = axs[2,1], cmap = 'hot', legend=True)
+axs[2,2].axis('off')
+axs[2,2].set_title('Target Availability')
+geo_analytical_table.plot(column = 'has_target', ax = axs[2,2], cmap = 'hot', legend=True)
+```
+
 ```python
 landcover_map
 ```
@@ -88,8 +137,6 @@ landcover_map
 ```python
 raster = gdal.Open(RASTER)
 
-#print(raster.GetProjection())
-
 # Dimensions
 print("This image has {0} on the x-axis and {1} on the y-axis for total image resolutio of {2}p".format(raster.RasterXSize,
                                                                                                          raster.RasterYSize,
@@ -99,7 +146,6 @@ print("It is a {0}-band raster".format(raster.RasterCount))
       
 band1 = raster.GetRasterBand(1)
 band2 = raster.GetRasterBand(2)
-   
 ```
 
 ### 2-Band Raster 
@@ -116,7 +162,7 @@ We can also see that the origin of the file is at the top left corner
 
 
 ### Let's take a closer look at Band1
-    Band1 contains the data we need since the tiles always encompass at least some "instate pixels", let us join it with "landcover_map" to look at the spatial distribution of landtypes across the state
+    Band1 contains the data we need since the tiles always encompass at least some "instate pixels", let us join it with "landcover_map" to look at the spatial distribution of land types across the state
 
 ```python
 with rio.open(RASTER) as DEM_src:
@@ -139,7 +185,6 @@ with rio.open(RASTER) as DEM_src:
 
 
     fig.show()
-
 ```
 
 ### How do the tiles cover the state ?
@@ -156,7 +201,6 @@ county_BD.geom_type.head()
 fig, ax = plt.subplots(figsize=(36, 36))
 
 ep.plot_bands(DEM_data,
-              # Here you must set the spatial extent or else the data will not line up with your geopandas layer
               extent=plotting_extent(DEM_src),
               cmap='Greys',
               title="GP DEM",
