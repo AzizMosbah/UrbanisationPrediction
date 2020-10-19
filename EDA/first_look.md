@@ -29,6 +29,7 @@ os.chdir('../')
 
 ```python
 from Pipelines.process_raw import analytical_table, target, columns_description, land_cover_map, shapefile
+from config import RASTER, SHAPEFILE
 import pandas as pd
 import numpy as np
 import rasterio as rio
@@ -126,7 +127,7 @@ geo_analytical_table.plot(column = 'has_target', ax = axs[2,2], cmap = 'hot', le
 ```
 
 ```python
-landcover_map
+land_cover_map
 ```
 
 ## Raster File
@@ -169,7 +170,7 @@ with rio.open(RASTER) as DEM_src:
     DEM_data = DEM_src.read(1, masked=False)
     counts = DEM_data.ravel()
     unique, counts = np.unique(counts, return_counts=True)
-    unique = [landcover_map.loc[landcover_map['pixel_value'] == u ,['land_cover_name']].values[0][0] if u != 0 else "Na" for u in unique]
+    unique = [land_cover_map.loc[land_cover_map['pixel_value'] == u ,['land_cover_name']].values[0][0] if u != 0 else "Na" for u in unique]
     dist = dict(zip(unique, counts))
     del dist['Na']
     dist = {k: v for k, v in sorted(dist.items(), key=lambda item: item[1], reverse=True)}
