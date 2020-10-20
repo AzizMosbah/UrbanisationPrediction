@@ -28,7 +28,12 @@ os.chdir('../')
 ### Modules and Libraries Needed
 
 ```python
-from Pipelines.process_raw import analytical_table, target, columns_description, land_cover_map, shapefile
+from Pipelines.process_raw import (process_analytical_table, 
+                                   process_target, 
+                                   process_columns_description, 
+                                   process_land_cover_map, 
+                                   process_shapefile)
+from Pipelines.transformations import merge_analytical_shapefile
 from config import RASTER, SHAPEFILE
 import pandas as pd
 import numpy as np
@@ -54,6 +59,7 @@ pyo.init_notebook_mode()
 ## Tabular Data
 
 ```python
+analytical_table = process_analytical_table()
 analytical_table.head()
 ```
 
@@ -62,6 +68,7 @@ print("The total number of tiles on the state of Wisconsin is {0}".format(len(an
 ```
 
 ```python
+target = process_target()
 target.head()
 ```
 
@@ -70,6 +77,7 @@ print("We have a target for {0} of these tiles".format(len(target)))
 ```
 
 ```python
+columns_description = process_columns_description()
 columns_description
 ```
 
@@ -80,6 +88,7 @@ columns_description
 ### Shapefile
 
 ```python
+shapefile = process_shapefile()
 shapefile.head()
 ```
 
@@ -92,7 +101,7 @@ shapefile.plot(ax = ax)
     We merge the data of interest to the shapefile from the analytical table using the primary key [tile_h, tile_v]
 
 ```python
-geo_analytical_table = shapefile.merge(analytical_table, how = 'inner', on = ['tile_h', 'tile_v'])
+geo_analytical_table = merge_analytical_shapefile()
 ```
 
 ```python
@@ -127,6 +136,7 @@ geo_analytical_table.plot(column = 'has_target', ax = axs[2,2], cmap = 'hot', le
 ```
 
 ```python
+land_cover_map = process_land_cover_map()
 land_cover_map
 ```
 
