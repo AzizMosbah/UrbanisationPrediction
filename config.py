@@ -1,4 +1,4 @@
-DATA_PATH = "Data"
+DATA_PATH = "../Data"
 
 
 # Data given to us as part of the hackathon by Bain & TNC
