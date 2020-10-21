@@ -136,6 +136,14 @@ geo_analytical_table.plot(column = 'has_target', ax = axs[2,2], cmap = 'hot', le
 ```
 
 ```python
+fig, (axr, axg) = plt.subplots(1,2, figsize=(14,7))
+axr.set_title('TNC protected area')
+geo_analytical_table.plot(column = 'protected_area_tnc', ax = axr, cmap = 'hot', legend=True)
+axg.set_title('TNC transfer area')
+geo_analytical_table.plot(column = 'protected_area_taa', ax = axg, cmap = 'hot', legend=True)
+```
+
+```python
 land_cover_map = process_land_cover_map()
 land_cover_map
 ```
