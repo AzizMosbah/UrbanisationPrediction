@@ -56,7 +56,7 @@ df.loc[df.urban_housing_units > 1,['urban_housing_units']].describe()
 ```
 
 ```python
-train, test = split(df_)
+train, test = split(df)
 ```
 
 ### Setting a Benchmark 
