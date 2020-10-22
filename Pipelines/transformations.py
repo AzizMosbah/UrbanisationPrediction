@@ -220,7 +220,7 @@ def pixel_for_NN():
     df.neighbor2 = df.neighbor2.fillna(df.neighbor1)
     df.neighbor3 = df.neighbor3.fillna(df.neighbor2)
     target = process_target()
-    return df.merge(target, how='inner', on=['tile_h', 'tile_v'])
+    return df.merge(target, how='inner', on=['tile_h', 'tile_v']) # @todo make it a left join if we want to evaluate everything
 
 
 def table_for_model():
