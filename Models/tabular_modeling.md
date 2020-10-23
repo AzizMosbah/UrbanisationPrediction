@@ -1,6 +1,7 @@
 ---
 jupyter:
   jupytext:
+    formats: md,ipynb
     text_representation:
       extension: .md
       format_name: markdown
@@ -262,6 +263,15 @@ print("RMSE on the validation set: {0}".format(np.sqrt(mse(y_train, grid_search.
 print("RMSE on the test set: {0}".format(np.sqrt(mse(y_test, grid_search.predict(X_test)))))
 ```
 
+### XGBoost
+
+```python
+xgbr = xgb.XGBRegressor(n_estimators =100,learning_rate = 0.01, max_depth = 8) 
+xgbr.fit(X_train, y_train)
+print("RMSE on the validation set: {0}".format(np.sqrt(mse(y_train, xgbr.predict(X_train)))))
+print("RMSE on the test set: {0}".format(np.sqrt(mse(y_test, xgbr.predict(X_test)))))
+```
+
 ### Gradient Boosting Machine
 
 ```python
@@ -290,6 +300,12 @@ gb = GradientBoostingRegressor()
 grid_search = GridSearchCV(estimator = gb, param_grid = param_grid, 
                           cv = 5, n_jobs = -1, verbose = 2)
 
+#grid_search.fit(X_train, y_train)
+```
+
+```python
+grid_search = GradientBoostingRegressor(n_estimators = 200, learning_rate = 0.025, max_depth = 6, min_samples_leaf = 4,
+                              init='zero', criterion= 'mse', max_features = 'sqrt')
 grid_search.fit(X_train, y_train)
 ```
 
@@ -300,13 +316,4 @@ print("RMSE on the test set: {0}".format(np.sqrt(mse(y_test, grid_search.predict
 
 ```python
 grid_search.best_params_
-```
-
-### XGBoost
-
-```python
-xgbr = xgb.XGBRegressor(n_estimators =100,learning_rate = 0.01, max_depth = 8) 
-xgbr.fit(X_train, y_train)
-print("RMSE on the validation set: {0}".format(np.sqrt(mse(y_train, xgbr.predict(X_train)))))
-print("RMSE on the test set: {0}".format(np.sqrt(mse(y_test, xgbr.predict(X_test)))))
 ```

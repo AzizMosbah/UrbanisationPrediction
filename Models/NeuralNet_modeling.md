@@ -1,6 +1,7 @@
 ---
 jupyter:
   jupytext:
+    formats: md,ipynb
     text_representation:
       extension: .md
       format_name: markdown
@@ -56,11 +57,6 @@ full_data = full_data.reshape(104835, 4, 33, 33, 1)
 ```
 
 ```python
-
-# full_data = full_data.reshape(104835, 33,33, 1)
-```
-
-```python
 full_data.shape
 ```
 
@@ -103,4 +99,8 @@ history = cnn_model.fit(X_train, y_train, epochs = 10)
 test_loss, test_acc = cnn_model.evaluate(X_test, y_test)
 
 print('Test accuracy:', test_acc)
+```
+
+```python
+
 ```
