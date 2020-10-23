@@ -30,6 +30,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error as mse
 ```
 
+    Note: pixel_for_NN takes at least 20 minutes to run 
+
 ```python
 df = pixel_for_NN()
 ```

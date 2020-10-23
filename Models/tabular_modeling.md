@@ -45,14 +45,11 @@ import pandas as pd
 ```
 
 ### Importing the final form of the tabular data 
+    - Note: table_for_model unites all the pipelines built previously and takes at least 15 minutes to run on normal hardware
 
 ```python
-df = table_for_model()
+df = table_for_model() 
 train, test = split(df) #split between has_target and ~has_target
-```
-
-```python
-df.loc[df.urban_housing_units > 1,['urban_housing_units']].describe()
 ```
 
 ```python
@@ -104,7 +101,7 @@ enhanced_predictors = ['empty_area', 'water_area',
                        'degree_of_slope_max','has_target', 
                        'housing_units', 'urban_housing_units',
                        'urban_housing_units_rate','neighbor1', 
-                       'neighbor2', 'neighbor3']
+                       'neighbor2', 'neighbor3', 'developed_medium_intensity']
 
        
 top_contenders = ['urban_area','housing_units', 
@@ -202,7 +199,8 @@ top_contenders = ['neighbor1', 'neighbor2',
                   'neighbor3', 'urban_area', 
                   'cultivated_area', 'urban_housing_units_rate',
                   'herbaceous_area', 'urban_housing_units',
-                  'housing_units', 'forest_area', 'barren_area']
+                  'housing_units', 'forest_area', 'barren_area', 
+                  'developed_medium_intensity']
 top_contenders_train = train.loc[:, top_contenders] 
 ```
 
@@ -280,11 +278,11 @@ print("RMSE on the test set: {0}".format(np.sqrt(mse(y_test, reg.predict(X_test)
 
 ```python
 param_grid={'n_estimators':[200], 
-            'learning_rate': [0.05],
-            'max_depth':[4], 
-            'min_samples_leaf':[3], 
+            'learning_rate': [0.1, 0.05, 0.02],
+            'max_depth':[2, 4, 6, 8], 
+            'min_samples_leaf':[2, 3, 4], 
             'criterion': ['mse'],
-            'max_features': ['sqrt'],
+            'max_features': ['sqrt', None],
             'init': ['zero']
             
            } 

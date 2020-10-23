@@ -223,6 +223,19 @@ def pixel_for_NN():
     return df.merge(target, how='inner', on=['tile_h', 'tile_v']) # @todo make it a left join if we want to evaluate everything
 
 
+def developed_medium_intensity_column():
+    """
+    Adding developed_medium_intensity pixel count to tile
+    :return: DataFrame with developed_medium_intensity column
+    """
+    df = process_tile_to_pixels()
+    full_picture = np.stack(df['pixels'], axis=0)
+    full_picture = [np.ndarray.flatten(tile) for tile in full_picture]
+    df['developed_medium_intensity'] = [row.tolist().count(23) for row in full_picture]
+    df = df.drop(columns =['pixels'], axis=1)
+    return df
+
+
 def table_for_model():
     """
     Makes the analytical table "ML-ingestable" by removing all NAs
@@ -230,6 +243,8 @@ def table_for_model():
     """
     df_target = merged_with_target()
     df = add_neighbors_variables(df_target, 'target')
+    medium_intensity = developed_medium_intensity_column()
+    df = df.merge(medium_intensity, how='left', on=['tile_h', 'tile_v'])
     df.neighbor1 = df.neighbor1.fillna(0)
     df.neighbor2 = df.neighbor2.fillna(df.neighbor1)
     df.neighbor3 = df.neighbor3.fillna(df.neighbor2)
@@ -238,7 +253,6 @@ def table_for_model():
     df.loc[:, ['housing_units', 'urban_housing_units', 'urban_housing_units_rate']] = df[
         ['housing_units', 'urban_housing_units', 'urban_housing_units_rate']].fillna(0)
     return df
-
 
 def split(df: pd.DataFrame):
     """
